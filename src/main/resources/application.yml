@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: Babyboom
+  # Mysql 数据库连接配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${babyboom.datasource.host}:${babyboom.datasource.port}/${babyboom.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${babyboom.datasource.username}
+    password: ${babyboom.datasource.password}
+    hikari: # 配置 HikariCP 连接池的参数
+      maximum-pool-size: 10  # 最大连接池大小
+      connection-timeout: 30000  # 连接超时时间
+      idle-timeout: 600000  # 空闲连接超时时间
+      max-lifetime: 1800000  # 最大生命周期
+      minimum-idle: 5  # 最小空闲连接数
+babyboom:
+  # Mysql 数据源配置
+  datasource:
+    host: localhost # 数据库地址
+    port: 9998 # 数据库端口
+    database: babyboom # 数据库名称
+    username: root # 数据库用户名
+    password: 123456 # 数据库密码
+  # JWT 配置
+  jwt:
+    secret-key: BabyboomBabyboomBabyboomBabyboomBabyboom必须要有256字节大  # 设置 JWT 签名加密时使用的秘钥
+    ttl: 7200000000  # 设置 JWT 过期时间（秒）
+    token-name: token  # 设置前端传递过来的令牌名称
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  # 配置 Mapper 扫描路径
+  mapper-locations: classpath:mapper/*.xml
+  # 配置实体类扫描路径
+  type-aliases-package: com.babyboombackend.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印 SQL 日志
+    map-underscore-to-camel-case: true  # 驼峰命名转换
+  global-config:
+    db-config:
+      table-prefix: babyboom_  # 配置表名前缀
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.babyboombackend
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
