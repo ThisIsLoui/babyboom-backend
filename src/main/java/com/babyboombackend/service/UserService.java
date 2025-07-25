@@ -1,7 +1,9 @@
 package com.babyboombackend.service;
 
+import com.babyboombackend.context.BaseContext;
 import com.babyboombackend.dto.CreateUserDTO;
 import com.babyboombackend.entity.User;
+import com.babyboombackend.exception.BaseException;
 import com.babyboombackend.mapper.UserMapper;
 import com.babyboombackend.utils.JwtUtil;
 import com.babyboombackend.vo.Result;
@@ -29,5 +31,13 @@ public class UserService {
             // 注册失败
             return Result.error("注册失败，请稍后再试");
         }
+    }
+
+    public Result<User> getCurrentUser() {
+        User user = userMapper.selectById(BaseContext.getCurrentId());
+        if (user == null) {
+            throw new BaseException("用户不存在");
+        }
+        return Result.success(user);
     }
 }
