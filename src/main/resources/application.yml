@@ -16,11 +16,11 @@ spring:
 babyboom:
   # Mysql 数据源配置
   datasource:
-    host: localhost # 数据库地址
-    port: 9998 # 数据库端口
+    host: sha1.clusters.zeabur.com # 数据库地址
+    port: 31039 # 数据库端口
     database: babyboom # 数据库名称
     username: root # 数据库用户名
-    password: 123456 # 数据库密码
+    password: 895i7ST42fqxQnuOR1XzHdUVNJjG3e60 # 数据库密码
   # JWT 配置
   jwt:
     secret-key: BabyboomBabyboomBabyboomBabyboomBabyboom必须要有256字节大  # 设置 JWT 签名加密时使用的秘钥
