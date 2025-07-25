@@ -48,7 +48,7 @@ public class MinioService {
             );
 
             // 返回访问链接（可换成预签名 URL）
-            return minioProperties.getEndpoint() + "/" + bucket + "/" + filename;
+            return "http://" + minioProperties.getEndpoint() + "/" + bucket + "/" + filename;
 
         } catch (Exception e) {
             log.error("上传文件到MinIO失败", e);

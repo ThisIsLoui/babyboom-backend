@@ -13,6 +13,21 @@ spring:
       idle-timeout: 600000  # 空闲连接超时时间
       max-lifetime: 1800000  # 最大生命周期
       minimum-idle: 5  # 最小空闲连接数
+    #配置上传
+  servlet:
+    multipart:
+      max-file-size: 100MB  # 单个文件最大上传大小
+      max-request-size: 100MB  # 请求总大小限制
+  # 配置 RabbitMQ
+  rabbitmq:
+    host: ${babyboom.rabbitmq.host}
+    port: ${babyboom.rabbitmq.port}
+    username: ${babyboom.rabbitmq.username}
+    password: ${babyboom.rabbitmq.password}
+  amqp:
+    deserialization:
+      trust:
+        all: true # 允许所有类型的消息反序列化
 babyboom:
   # Mysql 数据源配置
   datasource:
@@ -32,6 +47,17 @@ babyboom:
     access-key: c7qfdjhm
     secret-key: s5nxx4kq5947sskn
     bucket: c7qfdjhm-babyboom
+  # AI 配置
+  ai:
+    qwen-api-key: sk-tOBi0ZseZ18Wpv3OS4cOpEXjHNqiKdK2c4SGS4McfQGCoR0v
+    qwen-model-name: qwen-vl-max-latest
+    base-url: https://aiproxy.hzh.sealos.run/v1/
+  # RabbitMQ 配置
+  rabbitmq:
+    host: sha1.clusters.zeabur.com
+    port: 30541
+    username: admin
+    password: iKeGU2pL1bZl83CScf95Vdzg7mwH6r40
 
 # MyBatis-Plus 配置
 mybatis-plus:

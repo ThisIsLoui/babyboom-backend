@@ -1,5 +1,6 @@
 package com.babyboombackend.controller;
 
+import com.babyboombackend.dto.CreateLogDTO;
 import com.babyboombackend.exception.BaseException;
 import com.babyboombackend.service.LogService;
 import com.babyboombackend.vo.Result;
@@ -18,11 +19,19 @@ public class LogController {
     private LogService logService;
 
     @PostMapping("/file")
-    @Operation( summary = "上传图片/音频")
+    @Operation(summary = "上传图片/音频")
     public Result<Long> upload(@RequestParam("file") MultipartFile file, @RequestParam("fileType") String fileType) {
         if (file.isEmpty()){
             throw new BaseException("文件不能为空");
         }
         return logService.uploadFile(file, fileType);
+    }
+
+    @PostMapping
+    @Operation(summary = "创建日志")
+    public Result<Long> createLog(@RequestBody CreateLogDTO createLogDTO) {
+        // 这里可以添加创建日志的逻辑
+        // 例如保存到数据库等
+        return logService.createLog(createLogDTO);
     }
 }
