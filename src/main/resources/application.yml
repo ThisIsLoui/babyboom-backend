@@ -24,8 +24,14 @@ babyboom:
   # JWT 配置
   jwt:
     secret-key: BabyboomBabyboomBabyboomBabyboomBabyboom必须要有256字节大  # 设置 JWT 签名加密时使用的秘钥
-    ttl: 7200000000  # 设置 JWT 过期时间（秒）
+    ttl: 7200000000000  # 设置 JWT 过期时间（秒）
     token-name: token  # 设置前端传递过来的令牌名称
+  # 对象存储配置
+  minio:
+    endpoint: objectstorageapi.hzh.sealos.run
+    access-key: c7qfdjhm
+    secret-key: s5nxx4kq5947sskn
+    bucket: c7qfdjhm-babyboom
 
 # MyBatis-Plus 配置
 mybatis-plus:

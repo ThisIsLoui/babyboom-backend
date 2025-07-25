@@ -31,4 +31,5 @@ public class UserController {
     public Result<User> getCurrentUser() {
         return userService.getCurrentUser();
     }
+
 }
