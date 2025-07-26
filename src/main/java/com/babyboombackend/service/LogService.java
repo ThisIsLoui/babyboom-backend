@@ -27,6 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Slf4j
 public class LogService {
@@ -126,7 +129,7 @@ public class LogService {
     public Result<Page<LogVO>> getLog(GetLogDTO getLogDTO) {
         Long userId = BaseContext.getCurrentId();
         LambdaQueryWrapper<Log> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(Log::getId, userId);
+        lambdaQueryWrapper.eq(Log::getUserId, userId);
         if (getLogDTO.getDate() != null) {
             lambdaQueryWrapper.ge(Log::getCreateTime, getLogDTO.getDate().atStartOfDay())
                     .le(Log::getCreateTime, getLogDTO.getDate().atTime(23, 59, 59));
@@ -134,9 +137,9 @@ public class LogService {
         lambdaQueryWrapper.orderByDesc(Log::getCreateTime);
         Page<Log> logPage = logMapper.selectPage(new Page<>(getLogDTO.getCurrent(), getLogDTO.getSize()), lambdaQueryWrapper);
         if (logPage.getRecords().isEmpty()) {
-            return Result.success(new Page<>(getLogDTO.getCurrent(), getLogDTO.getSize()));
+            return Result.success(new Page<>(getLogDTO.getCurrent(), getLogDTO.getSize(), 0));
         }
-        Page<LogVO> logVOPage = new Page<>(logPage.getCurrent(), logPage.getSize(), logPage.getTotal());
+        List<LogVO> logVOList = new ArrayList<>(); // Create a modifiable list
         for (Log log : logPage.getRecords()) {
             LogVO logVO = new LogVO();
             logVO.setId(log.getId());
@@ -146,13 +149,21 @@ public class LogService {
             // 查询音频列表
             LambdaQueryWrapper<LogAudio> audioQueryWrapper = new LambdaQueryWrapper<>();
             audioQueryWrapper.eq(LogAudio::getLogId, log.getId());
-            logVO.setAudioList(logAudioMapper.selectList(audioQueryWrapper));
+            List<LogAudio> audioList = logAudioMapper.selectList(audioQueryWrapper);
+            if(!audioList.isEmpty()) {
+                logVO.setAudioList(audioList);
+            }
             // 查询图片列表
             LambdaQueryWrapper<LogImage> imageQueryWrapper = new LambdaQueryWrapper<>();
             imageQueryWrapper.eq(LogImage::getLogId, log.getId());
-            logVO.setImageList(logImageMapper.selectList(imageQueryWrapper));
-            logVOPage.getRecords().add(logVO);
+            List<LogImage> imageList = logImageMapper.selectList(imageQueryWrapper);
+            if(!imageList.isEmpty()) {
+                logVO.setImageList(imageList);
+            }
+            logVOList.add(logVO);
         }
+        Page<LogVO> logVOPage = new Page<>(logPage.getCurrent(), logPage.getSize(), logPage.getTotal());
+        logVOPage.setRecords(logVOList); // Set the modifiable list to the page
         return Result.success(logVOPage);
     }
 }
