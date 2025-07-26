@@ -119,7 +119,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:5173", "https://babyboom-frontend.vercel.app") // 指定域名
+                .allowedOriginPatterns("*") // 允许所有来源
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true)
