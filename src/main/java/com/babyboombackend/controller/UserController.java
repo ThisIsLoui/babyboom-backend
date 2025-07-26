@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(name = "个人中心")
 @RequestMapping("/user")
+@CrossOrigin(origins = "*") // 允许所有域访问，生产环境建议指定具体域名
 public class UserController {
 
     @Autowired

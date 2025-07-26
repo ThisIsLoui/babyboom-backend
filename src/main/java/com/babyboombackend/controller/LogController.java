@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @Tag(name = "日志管理")
 @RequestMapping("/log")
+@CrossOrigin(origins = "*") // 允许所有域访问，生产环境建议指定具体域名
 public class LogController {
 
     @Autowired
