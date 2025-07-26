@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 public class Log {
     private Long id;
     private String text;
+    private String title;
     private Long userId;
 
     @TableField(fill = FieldFill.INSERT)

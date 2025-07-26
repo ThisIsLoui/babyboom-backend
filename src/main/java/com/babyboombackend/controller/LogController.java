@@ -45,4 +45,9 @@ public class LogController {
     public Result<List<LogVO>> getLog(@RequestBody GetLogDTO getLogDTO){
         return logService.getLog(getLogDTO);
     }
+
+    // @GetMapping("boom")
+    // @Operation(summary = "获取记忆盲盒")
+    // public Result<>
+
 }

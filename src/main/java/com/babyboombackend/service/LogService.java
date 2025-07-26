@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -91,6 +90,7 @@ public class LogService {
         Log log = Log.builder()
                 .userId(userId)
                 .text(createLogDTO.getText())
+                .title(createLogDTO.getTitle())
                 .build();
         // 插入日志到数据库
         int insertResult = logMapper.insert(log);
@@ -182,6 +182,7 @@ public class LogService {
             LogVO logVO = new LogVO();
             logVO.setId(log.getId());
             logVO.setUserId(log.getUserId());
+            logVO.setTitle(log.getTitle());
             logVO.setText(log.getText());
             logVO.setCreateTime(log.getCreateTime());
             // 查询音频列表

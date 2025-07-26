@@ -13,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateLogDTO {
+    @Schema(description = "标题内容")
+    private String title;
+
     @Schema(description = "文字内容")
     private String text;
 

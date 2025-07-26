@@ -14,8 +14,11 @@ CREATE TABLE babyboom_users (
                                 is_deleted TINYINT DEFAULT 1 COMMENT '逻辑删除标志 (1:存在, 0:删除)'
 ) COMMENT='用户表';
 
+Drop TABLE babyboom_logs;
+
 CREATE TABLE babyboom_logs (
                                id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '日志ID',
+                               title VARCHAR(255) COMMENT '日志标题',
                                text VARCHAR(255) COMMENT '日志内容',
                                user_id BIGINT COMMENT '关联用户ID',
                                create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
