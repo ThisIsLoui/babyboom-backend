@@ -112,19 +112,19 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/user/login/**");
     }
 
-    /**
-     * 添加跨域配置
-     * @param registry
-     */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*") // 允许所有来源
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
-    }
+    // /**
+    //  * 添加跨域配置
+    //  * @param registry
+    //  */
+    // @Override
+    // public void addCorsMappings(CorsRegistry registry) {
+    //     registry.addMapping("/**")
+    //             .allowedOriginPatterns("*") // 允许所有来源
+    //             .allowedMethods("*")
+    //             .allowedHeaders("*")
+    //             .allowCredentials(true)
+    //             .maxAge(3600);
+    // }
 
 
 
