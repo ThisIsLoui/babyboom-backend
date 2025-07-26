@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @Tag(name = "日志管理")
 @RequestMapping("/log")
@@ -40,7 +42,7 @@ public class LogController {
 
     @PostMapping("list")
     @Operation(summary = "获取日志")
-    public Result<Page<LogVO>> getLog(@RequestBody GetLogDTO getLogDTO){
+    public Result<List<LogVO>> getLog(@RequestBody GetLogDTO getLogDTO){
         return logService.getLog(getLogDTO);
     }
 }

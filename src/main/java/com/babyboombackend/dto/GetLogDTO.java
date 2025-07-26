@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetLogDTO extends PageDTO{
+public class GetLogDTO{
     @Schema(description = "日期")
     private LocalDate date;
 }
