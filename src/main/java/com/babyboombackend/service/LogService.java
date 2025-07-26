@@ -12,14 +12,11 @@ import com.babyboombackend.exception.BaseException;
 import com.babyboombackend.mapper.LogAudioMapper;
 import com.babyboombackend.mapper.LogImageMapper;
 import com.babyboombackend.mapper.LogMapper;
+import com.babyboombackend.vo.BoomVO;
 import com.babyboombackend.vo.LogVO;
 import com.babyboombackend.vo.Result;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +43,9 @@ public class LogService {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private QwenAIService qwenAIService;
 
     public Result<Long> uploadFile(MultipartFile file, String fileType) {
         String url = minioService.uploadFile(file);
@@ -179,28 +179,60 @@ public class LogService {
         List<Log> logPage = logMapper.selectList(lambdaQueryWrapper);
         List<LogVO> logVOList = new ArrayList<>(); // Create a modifiable list
         for (Log log : logPage) {
-            LogVO logVO = new LogVO();
-            logVO.setId(log.getId());
-            logVO.setUserId(log.getUserId());
-            logVO.setTitle(log.getTitle());
-            logVO.setText(log.getText());
-            logVO.setCreateTime(log.getCreateTime());
-            // 查询音频列表
-            LambdaQueryWrapper<LogAudio> audioQueryWrapper = new LambdaQueryWrapper<>();
-            audioQueryWrapper.eq(LogAudio::getLogId, log.getId());
-            List<LogAudio> audioList = logAudioMapper.selectList(audioQueryWrapper);
-            if(!audioList.isEmpty()) {
-                logVO.setAudioList(audioList);
-            }
-            // 查询图片列表
-            LambdaQueryWrapper<LogImage> imageQueryWrapper = new LambdaQueryWrapper<>();
-            imageQueryWrapper.eq(LogImage::getLogId, log.getId());
-            List<LogImage> imageList = logImageMapper.selectList(imageQueryWrapper);
-            if(!imageList.isEmpty()) {
-                logVO.setImageList(imageList);
-            }
-            logVOList.add(logVO);
+            logVOList.add(getLogById(log.getId()));
         }
         return Result.success(logVOList);
+    }
+
+    public LogVO getLogById(Long logId) {
+        Log log = logMapper.selectById(logId);
+        if (log == null) {
+            throw new BaseException("日志不存在");
+        }
+        LogVO logVO = new LogVO();
+        logVO.setId(log.getId());
+        logVO.setUserId(log.getUserId());
+        logVO.setTitle(log.getTitle());
+        logVO.setText(log.getText());
+        logVO.setCreateTime(log.getCreateTime());
+        // 查询音频列表
+        LambdaQueryWrapper<LogAudio> audioQueryWrapper = new LambdaQueryWrapper<>();
+        audioQueryWrapper.eq(LogAudio::getLogId, log.getId());
+        List<LogAudio> audioList = logAudioMapper.selectList(audioQueryWrapper);
+        if(!audioList.isEmpty()) {
+            logVO.setAudioList(audioList);
+        }
+        // 查询图片列表
+        LambdaQueryWrapper<LogImage> imageQueryWrapper = new LambdaQueryWrapper<>();
+        imageQueryWrapper.eq(LogImage::getLogId, log.getId());
+        List<LogImage> imageList = logImageMapper.selectList(imageQueryWrapper);
+        if(!imageList.isEmpty()) {
+            logVO.setImageList(imageList);
+        }
+        return logVO;
+    }
+
+    public Result<BoomVO> getBoom() {
+        Long userId = BaseContext.getCurrentId();
+        // 查询用户的所有日志
+        LambdaQueryWrapper<LogImage> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(LogImage::getUserId, userId);
+        queryWrapper.isNotNull(LogImage::getAnalysis);
+        List<LogImage> imageList = logImageMapper.selectList(queryWrapper);
+        if (imageList.isEmpty()) {
+            throw new BaseException("没有找到任何日志");
+        }
+        // 随机选择一个日志图片
+        LogImage randomImage = imageList.get((int) (Math.random() * imageList.size()));
+
+        LogVO logVO = getLogById(randomImage.getLogId());
+
+        // 构建BoomVO
+        BoomVO boomVO = new BoomVO();
+        boomVO.setLog(logVO);
+        boomVO.setUsedImage(randomImage.getUrl());
+        boomVO.setDescription(qwenAIService.summerizeText(randomImage.getAnalysis(), logVO.getText(), logVO.getTitle()));
+
+        return Result.success(boomVO);
     }
 }

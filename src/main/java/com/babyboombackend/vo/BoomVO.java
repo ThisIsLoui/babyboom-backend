@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoomVO {
-    private String imageUrl; // 图片URL
+    private LogVO log;
+    private String usedImage; // 使用的图片URL
     private String description; // 音频URL
 }

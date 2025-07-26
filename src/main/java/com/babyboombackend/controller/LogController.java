@@ -4,6 +4,7 @@ import com.babyboombackend.dto.CreateLogDTO;
 import com.babyboombackend.dto.GetLogDTO;
 import com.babyboombackend.exception.BaseException;
 import com.babyboombackend.service.LogService;
+import com.babyboombackend.vo.BoomVO;
 import com.babyboombackend.vo.LogVO;
 import com.babyboombackend.vo.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -46,8 +47,10 @@ public class LogController {
         return logService.getLog(getLogDTO);
     }
 
-    // @GetMapping("boom")
-    // @Operation(summary = "获取记忆盲盒")
-    // public Result<>
+    @GetMapping("boom")
+    @Operation(summary = "获取记忆盲盒")
+    public Result<BoomVO> getBoom(){
+        return logService.getBoom();
+    }
 
 }
