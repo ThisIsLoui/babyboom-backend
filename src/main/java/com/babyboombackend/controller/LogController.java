@@ -1,9 +1,12 @@
 package com.babyboombackend.controller;
 
 import com.babyboombackend.dto.CreateLogDTO;
+import com.babyboombackend.dto.GetLogDTO;
 import com.babyboombackend.exception.BaseException;
 import com.babyboombackend.service.LogService;
+import com.babyboombackend.vo.LogVO;
 import com.babyboombackend.vo.Result;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +36,11 @@ public class LogController {
         // 这里可以添加创建日志的逻辑
         // 例如保存到数据库等
         return logService.createLog(createLogDTO);
+    }
+
+    @PostMapping("list")
+    @Operation(summary = "获取日志")
+    public Result<Page<LogVO>> getLog(@RequestBody GetLogDTO getLogDTO){
+        return logService.getLog(getLogDTO);
     }
 }

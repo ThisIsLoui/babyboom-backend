@@ -3,6 +3,7 @@ package com.babyboombackend.service;
 import com.babyboombackend.config.RabbitMQConfig;
 import com.babyboombackend.context.BaseContext;
 import com.babyboombackend.dto.CreateLogDTO;
+import com.babyboombackend.dto.GetLogDTO;
 import com.babyboombackend.dto.ImageAnalysisDTO;
 import com.babyboombackend.entity.Log;
 import com.babyboombackend.entity.LogAudio;
@@ -11,7 +12,12 @@ import com.babyboombackend.exception.BaseException;
 import com.babyboombackend.mapper.LogAudioMapper;
 import com.babyboombackend.mapper.LogImageMapper;
 import com.babyboombackend.mapper.LogMapper;
+import com.babyboombackend.vo.LogVO;
 import com.babyboombackend.vo.Result;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 public class LogService {
 
-    private static final Logger log = LoggerFactory.getLogger(LogService.class);
     @Autowired
     private MinioService minioService;
 
@@ -115,5 +121,38 @@ public class LogService {
         }
         // 返回新创建的日志ID
         return Result.success(log.getId());
+    }
+
+    public Result<Page<LogVO>> getLog(GetLogDTO getLogDTO) {
+        Long userId = BaseContext.getCurrentId();
+        LambdaQueryWrapper<Log> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Log::getId, userId);
+        if (getLogDTO.getDate() != null) {
+            lambdaQueryWrapper.ge(Log::getCreateTime, getLogDTO.getDate().atStartOfDay())
+                    .le(Log::getCreateTime, getLogDTO.getDate().atTime(23, 59, 59));
+        }
+        lambdaQueryWrapper.orderByDesc(Log::getCreateTime);
+        Page<Log> logPage = logMapper.selectPage(new Page<>(getLogDTO.getCurrent(), getLogDTO.getSize()), lambdaQueryWrapper);
+        if (logPage.getRecords().isEmpty()) {
+            return Result.success(new Page<>(getLogDTO.getCurrent(), getLogDTO.getSize()));
+        }
+        Page<LogVO> logVOPage = new Page<>(logPage.getCurrent(), logPage.getSize(), logPage.getTotal());
+        for (Log log : logPage.getRecords()) {
+            LogVO logVO = new LogVO();
+            logVO.setId(log.getId());
+            logVO.setUserId(log.getUserId());
+            logVO.setText(log.getText());
+            logVO.setCreateTime(log.getCreateTime());
+            // 查询音频列表
+            LambdaQueryWrapper<LogAudio> audioQueryWrapper = new LambdaQueryWrapper<>();
+            audioQueryWrapper.eq(LogAudio::getLogId, log.getId());
+            logVO.setAudioList(logAudioMapper.selectList(audioQueryWrapper));
+            // 查询图片列表
+            LambdaQueryWrapper<LogImage> imageQueryWrapper = new LambdaQueryWrapper<>();
+            imageQueryWrapper.eq(LogImage::getLogId, log.getId());
+            logVO.setImageList(logImageMapper.selectList(imageQueryWrapper));
+            logVOPage.getRecords().add(logVO);
+        }
+        return Result.success(logVOPage);
     }
 }
